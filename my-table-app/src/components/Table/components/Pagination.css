@@ -1,0 +1,216 @@
+.table-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  background: #ffffff;
+  border-top: 1px solid #e9ecef;
+  border-radius: 0 0 8px 8px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.pagination-info {
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.pagination-info strong {
+  color: #495057;
+  font-weight: 600;
+}
+
+/* Pagination Controls */
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Navigation Buttons (Previous/Next) */
+.pagination-nav-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #dee2e6;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #495057;
+}
+
+.pagination-nav-button:hover:not(:disabled) {
+  background: #f8f9fa;
+  border-color: #667eea;
+  color: #667eea;
+  transform: scale(1.05);
+}
+
+.pagination-nav-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: #f8f9fa;
+}
+
+.nav-arrow {
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+/* Page Numbers Container */
+.pagination-pages {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 4px;
+}
+
+/* Individual Page Buttons */
+.pagination-page-button {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 8px;
+  border: 1px solid #dee2e6;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  color: #495057;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination-page-button:hover:not(:disabled) {
+  background: #f8f9fa;
+  border-color: #667eea;
+  color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
+}
+
+.pagination-page-button.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  cursor: default;
+}
+
+.pagination-page-button:disabled {
+  cursor: default;
+}
+
+/* Ellipsis */
+.pagination-ellipsis {
+  padding: 0 8px;
+  color: #adb5bd;
+  font-size: 14px;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  height: 36px;
+}
+
+/* Page Size Selector */
+.pagination-size-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #6c757d;
+}
+
+.pagination-size-selector label {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.pagination-size-dropdown {
+  padding: 8px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #495057;
+  transition: all 0.2s ease;
+  min-width: 70px;
+}
+
+.pagination-size-dropdown:hover {
+  border-color: #667eea;
+}
+
+.pagination-size-dropdown:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 968px) {
+  .table-pagination {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .pagination-info {
+    order: 1;
+  }
+
+  .pagination-controls {
+    order: 2;
+  }
+
+  .pagination-size-selector {
+    order: 3;
+  }
+}
+
+@media (max-width: 576px) {
+  .pagination-pages {
+    gap: 2px;
+  }
+
+  .pagination-page-button,
+  .pagination-nav-button {
+    min-width: 32px;
+    height: 32px;
+    font-size: 13px;
+  }
+
+  .pagination-nav-button {
+    width: 32px;
+  }
+
+  .nav-arrow {
+    font-size: 18px;
+  }
+}
+
+/* Animation for smooth transitions */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pagination-page-button,
+.pagination-nav-button {
+  animation: slideIn 0.3s ease;
+}
