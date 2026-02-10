@@ -1,18 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { storageService } from '../../services/storageService';
+import { FitnessLevel } from '../../types/enums';
 import Layout from '../../components/Layout/Layout';
 import './ClientList.css';
 
 const ClientList: React.FC = () => {
   const { trainer } = useAuth();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedFitnessLevel, setSelectedFitnessLevel] = useState<string>('');
 
   if (!trainer) return null;
 
-  const clients = trainer.clients
+  const allClients = trainer.clients
     .map((clientId) => storageService.getClientById(clientId))
     .filter(Boolean);
+
+  const filteredClients = allClients.filter((client) => {
+    if (!client) return false;
+    const matchesSearch =
+      client.profile.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.goals.some(goal => goal.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesFitnessLevel =
+      !selectedFitnessLevel || client.profile.fitnessLevel === selectedFitnessLevel;
+    return matchesSearch && matchesFitnessLevel;
+  });
 
   return (
     <Layout>
@@ -20,9 +34,33 @@ const ClientList: React.FC = () => {
         <h1>My Clients</h1>
         <p className="page-subtitle">Manage your connected clients</p>
 
-        {clients.length > 0 ? (
+        <div className="client-list-filters">
+          <div className="search-box">
+            <input
+              type="text"
+              placeholder="Search clients by name, email, or goals..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input"
+            />
+          </div>
+          <div className="filter-box">
+            <select
+              value={selectedFitnessLevel}
+              onChange={(e) => setSelectedFitnessLevel(e.target.value)}
+              className="filter-select"
+            >
+              <option value="">All Fitness Levels</option>
+              <option value={FitnessLevel.BEGINNER}>Beginner</option>
+              <option value={FitnessLevel.INTERMEDIATE}>Intermediate</option>
+              <option value={FitnessLevel.ADVANCED}>Advanced</option>
+            </select>
+          </div>
+        </div>
+
+        {filteredClients.length > 0 ? (
           <div className="clients-grid">
-            {clients.map((client) => (
+            {filteredClients.map((client) => (
               <Link
                 key={client!.id}
                 to={`/clients/${client!.id}`}

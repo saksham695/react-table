@@ -18,9 +18,12 @@ const TrainerList: React.FC = () => {
   );
 
   const filteredTrainers = allTrainers.filter((trainer) => {
+    const searchLower = searchTerm.toLowerCase();
     const matchesSearch =
-      trainer.profile.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      trainer.profile.bio.toLowerCase().includes(searchTerm.toLowerCase());
+      !searchTerm ||
+      trainer.profile.fullName.toLowerCase().includes(searchLower) ||
+      trainer.profile.bio.toLowerCase().includes(searchLower) ||
+      trainer.profile.areasOfExpertise.some(exp => exp.toLowerCase().includes(searchLower));
     const matchesExpertise =
       !selectedExpertise || trainer.profile.areasOfExpertise.includes(selectedExpertise);
     return matchesSearch && matchesExpertise;
