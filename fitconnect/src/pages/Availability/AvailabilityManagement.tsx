@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { storageService } from '../../services/storageService';
 import { DayOfWeek } from '../../types/enums';
@@ -14,10 +14,22 @@ const AvailabilityManagement: React.FC = () => {
   const [startTime, setStartTime] = useState('09:00');
   const [endTime, setEndTime] = useState('10:00');
   const [error, setError] = useState('');
+  const [allAvailability, setAllAvailability] = useState<Availability[]>([]);
+
+  useEffect(() => {
+    if (trainer) {
+      loadAvailability();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trainer]);
+
+  const loadAvailability = () => {
+    if (!trainer) return;
+    const availability = storageService.getAvailabilityByTrainerId(trainer.id);
+    setAllAvailability(availability);
+  };
 
   if (!trainer) return null;
-
-  const allAvailability = storageService.getAvailabilityByTrainerId(trainer.id);
 
   const handleAddSlot = () => {
     setError('');
@@ -55,9 +67,10 @@ const AvailabilityManagement: React.FC = () => {
       storageService.createAvailability(newAvailability);
     }
 
-    // Reset form
+    // Reset form and reload availability
     setStartTime('09:00');
     setEndTime('10:00');
+    loadAvailability();
   };
 
   const handleRemoveSlot = (day: DayOfWeek, slotIndex: number) => {
@@ -69,6 +82,7 @@ const AvailabilityManagement: React.FC = () => {
       } else {
         storageService.updateAvailability(availability);
       }
+      loadAvailability();
     }
   };
 
