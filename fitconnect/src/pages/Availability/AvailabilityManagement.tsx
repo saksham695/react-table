@@ -74,14 +74,24 @@ const AvailabilityManagement: React.FC = () => {
   };
 
   const handleRemoveSlot = (day: DayOfWeek, slotIndex: number) => {
-    const availability = allAvailability.find((a) => a.dayOfWeek === day);
+    if (!trainer) return;
+    
+    // Get fresh data from localStorage
+    const freshAvailability = storageService.getAvailabilityByTrainerId(trainer.id);
+    const availability = freshAvailability.find((a) => a.dayOfWeek === day);
+    
     if (availability) {
+      // Remove the slot
       availability.timeSlots.splice(slotIndex, 1);
+      
+      // Update or delete based on remaining slots
       if (availability.timeSlots.length === 0) {
         storageService.deleteAvailability(availability.id);
       } else {
         storageService.updateAvailability(availability);
       }
+      
+      // Reload to reflect changes
       loadAvailability();
     }
   };
