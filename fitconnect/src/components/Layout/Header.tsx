@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { UserRole } from '../../types/enums';
 import './Header.css';
 
 const Header: React.FC = () => {
@@ -16,7 +17,7 @@ const Header: React.FC = () => {
   if (!user) return null;
 
   const displayName =
-    user.role === 'TRAINER'
+    user.role === UserRole.TRAINER
       ? trainer?.profile.fullName || user.email
       : client?.profile.fullName || user.email;
 
@@ -27,11 +28,13 @@ const Header: React.FC = () => {
           FitConnect
         </Link>
         <nav className="header-nav">
-          {user.role === 'TRAINER' ? (
+          {user.role === UserRole.TRAINER ? (
             <>
               <Link to="/dashboard">Dashboard</Link>
               <Link to="/clients">My Clients</Link>
               <Link to="/courses">My Courses</Link>
+              <Link to="/availability">Availability</Link>
+              <Link to="/my-bookings">Bookings</Link>
             </>
           ) : (
             <>
@@ -39,6 +42,7 @@ const Header: React.FC = () => {
               <Link to="/trainers">Find Trainers</Link>
               <Link to="/my-courses">My Courses</Link>
               <Link to="/goals">My Goals</Link>
+              <Link to="/my-bookings">My Bookings</Link>
             </>
           )}
         </nav>
@@ -52,6 +56,9 @@ const Header: React.FC = () => {
           </button>
           {showMenu && (
             <div className="header-dropdown">
+              <Link to="/profile" onClick={() => setShowMenu(false)}>
+                My Profile
+              </Link>
               <button onClick={handleLogout}>Logout</button>
             </div>
           )}

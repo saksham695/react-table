@@ -9,6 +9,8 @@ import Landing from './pages/Landing/Landing';
 import Login from './pages/Login/Login';
 import Signup from './pages/Signup/Signup';
 import Dashboard from './pages/Dashboard/Dashboard';
+import TrainerProfile from './pages/Profile/TrainerProfile';
+import ClientProfile from './pages/Profile/ClientProfile';
 import TrainerList from './pages/Trainers/TrainerList';
 import TrainerDetail from './pages/Trainers/TrainerDetail';
 import CourseList from './pages/Courses/CourseList';
@@ -18,11 +20,23 @@ import MyCourses from './pages/Courses/MyCourses';
 import ClientList from './pages/Clients/ClientList';
 import ClientDetail from './pages/Clients/ClientDetail';
 import Goals from './pages/Goals/Goals';
+import AvailabilityManagement from './pages/Availability/AvailabilityManagement';
+import BookSession from './pages/Booking/BookSession';
+import TrainerBookings from './pages/Booking/TrainerBookings';
+import ClientBookings from './pages/Booking/ClientBookings';
 
 import './App.css';
 
 const AppRoutes: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+
+  const ProfilePage = () => {
+    return user?.role === UserRole.TRAINER ? <TrainerProfile /> : <ClientProfile />;
+  };
+
+  const BookingsPage = () => {
+    return user?.role === UserRole.TRAINER ? <TrainerBookings /> : <ClientBookings />;
+  };
 
   return (
     <Routes>
@@ -44,18 +58,28 @@ const AppRoutes: React.FC = () => {
         }
       />
       <Route
-        path="/trainers"
+        path="/profile"
         element={
-          <ProtectedRoute allowedRoles={[UserRole.CLIENT]}>
-            <TrainerList />
+          <ProtectedRoute>
+            <ProfilePage />
           </ProtectedRoute>
         }
       />
       <Route
-        path="/trainers/:id"
+        path="/my-bookings"
         element={
-          <ProtectedRoute allowedRoles={[UserRole.CLIENT]}>
-            <TrainerDetail />
+          <ProtectedRoute>
+            <BookingsPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Trainer Routes */}
+      <Route
+        path="/availability"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.TRAINER]}>
+            <AvailabilityManagement />
           </ProtectedRoute>
         }
       />
@@ -99,6 +123,32 @@ const AppRoutes: React.FC = () => {
           </ProtectedRoute>
         }
       />
+
+      {/* Client Routes */}
+      <Route
+        path="/trainers"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.CLIENT]}>
+            <TrainerList />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/trainers/:id"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.CLIENT]}>
+            <TrainerDetail />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/book-session/:trainerId"
+        element={
+          <ProtectedRoute allowedRoles={[UserRole.CLIENT]}>
+            <BookSession />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/goals"
         element={
@@ -115,6 +165,7 @@ const AppRoutes: React.FC = () => {
           </ProtectedRoute>
         }
       />
+
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

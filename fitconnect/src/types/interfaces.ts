@@ -1,4 +1,4 @@
-import { UserRole, FitnessLevel, CourseDifficulty, ConnectionStatus } from './enums';
+import { UserRole, FitnessLevel, CourseDifficulty, ConnectionStatus, DayOfWeek, BookingStatus, TrainingType } from './enums';
 
 export interface User {
   id: string;
@@ -25,18 +25,48 @@ export interface Client extends User {
 
 export interface TrainerProfile {
   fullName: string;
+  age?: number;
+  phoneNumber?: string;
   bio: string;
   profilePhoto?: string;
   areasOfExpertise: string[];
   yearsOfExperience: number;
   achievements: Achievement[];
+  certifications: Certification[];
+  totalClientsTrained?: number;
+  pricing?: Pricing;
+  physicalDetails?: PhysicalDetails;
+}
+
+export interface Certification {
+  id: string;
+  title: string;
+  issuedBy?: string;
+  date?: string;
+  certificateUrl?: string;
+}
+
+export interface Pricing {
+  perSession?: number;
+  monthly?: number;
+  currency: string;
+}
+
+export interface PhysicalDetails {
+  height?: number; // in cm
+  weight?: number; // in kg
+  bmi?: number; // auto-calculated
 }
 
 export interface ClientProfile {
   fullName: string;
   age?: number;
+  phoneNumber?: string;
   profilePhoto?: string;
   fitnessLevel: FitnessLevel;
+  physicalDetails?: PhysicalDetails;
+  medicalConditions?: string;
+  preferredTrainingType?: TrainingType[];
 }
 
 export interface Achievement {
@@ -64,4 +94,30 @@ export interface Connection {
   clientId: string;
   status: ConnectionStatus;
   createdAt: string;
+}
+
+export interface TimeSlot {
+  startTime: string; // HH:MM format (e.g., "09:00")
+  endTime: string; // HH:MM format (e.g., "10:00")
+}
+
+export interface Availability {
+  id: string;
+  trainerId: string;
+  dayOfWeek: DayOfWeek;
+  timeSlots: TimeSlot[];
+  isRecurring: boolean;
+  createdAt: string;
+}
+
+export interface Booking {
+  id: string;
+  trainerId: string;
+  clientId: string;
+  date: string; // ISO date string
+  timeSlot: TimeSlot;
+  status: BookingStatus;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
 }

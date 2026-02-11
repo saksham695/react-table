@@ -46,7 +46,14 @@
   font-weight: 500;
 }
 
-.connect-button {
+.trainer-action-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.connect-button,
+.book-session-button {
   background: #2563eb;
   color: white;
   padding: 0.75rem 2rem;
@@ -59,6 +66,14 @@
 
 .connect-button:hover {
   background: #1d4ed8;
+}
+
+.book-session-button {
+  background: #10b981;
+}
+
+.book-session-button:hover {
+  background: #059669;
 }
 
 .trainer-detail-content {

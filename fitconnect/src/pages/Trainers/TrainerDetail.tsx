@@ -52,10 +52,22 @@ const TrainerDetail: React.FC = () => {
             </p>
             {isConnected && <span className="connected-badge">Connected</span>}
           </div>
-          {client && !isConnected && (
-            <button onClick={handleConnect} className="connect-button">
-              Connect with Trainer
-            </button>
+          {client && (
+            <div className="trainer-action-buttons">
+              {!isConnected && (
+                <button onClick={handleConnect} className="connect-button">
+                  Connect with Trainer
+                </button>
+              )}
+              {isConnected && (
+                <button
+                  onClick={() => navigate(`/book-session/${trainer.id}`)}
+                  className="book-session-button"
+                >
+                  Book Session
+                </button>
+              )}
+            </div>
           )}
         </div>
 

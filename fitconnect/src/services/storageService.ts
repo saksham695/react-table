@@ -1,5 +1,5 @@
-import { User, Trainer, Client, Course, Connection } from '../types/interfaces';
-import { UserRole, ConnectionStatus, FitnessLevel, CourseDifficulty } from '../types/enums';
+import { User, Trainer, Client, Course, Connection, Availability, Booking } from '../types/interfaces';
+import { UserRole, ConnectionStatus, FitnessLevel, CourseDifficulty, BookingStatus } from '../types/enums';
 
 /**
  * Storage Service - Manages localStorage operations
@@ -10,6 +10,8 @@ class StorageService {
     users: 'fitconnect_users',
     courses: 'fitconnect_courses',
     connections: 'fitconnect_connections',
+    availability: 'fitconnect_availability',
+    bookings: 'fitconnect_bookings',
   };
 
   // Initialize with mock data if storage is empty
@@ -29,6 +31,8 @@ class StorageService {
         createdAt: new Date().toISOString(),
         profile: {
           fullName: 'John Smith',
+          age: 35,
+          phoneNumber: '+1-555-0101',
           bio: 'Certified personal trainer with 10 years of experience. Specialized in strength training and weight loss.',
           areasOfExpertise: ['Strength Training', 'Weight Loss', 'Bodybuilding'],
           yearsOfExperience: 10,
@@ -36,6 +40,21 @@ class StorageService {
             { id: 'ach-1', title: 'NASM Certified Personal Trainer', date: '2014' },
             { id: 'ach-2', title: 'Bodybuilding Competition Winner 2019', date: '2019' },
           ],
+          certifications: [
+            { id: 'cert-1', title: 'NASM Certified Personal Trainer', issuedBy: 'NASM', date: '2014' },
+            { id: 'cert-2', title: 'Nutrition Specialist', issuedBy: 'Precision Nutrition', date: '2016' },
+          ],
+          totalClientsTrained: 150,
+          pricing: {
+            perSession: 75,
+            monthly: 250,
+            currency: 'USD',
+          },
+          physicalDetails: {
+            height: 180,
+            weight: 85,
+            bmi: 26.2,
+          },
         },
         courses: [],
         clients: [],
@@ -55,6 +74,7 @@ class StorageService {
             { id: 'ach-3', title: 'RYT 500 Certified Yoga Instructor', date: '2016' },
             { id: 'ach-4', title: 'Mindfulness-Based Stress Reduction Certification', date: '2018' },
           ],
+          certifications: [],
         },
         courses: [],
         clients: [],
@@ -74,6 +94,7 @@ class StorageService {
             { id: 'ach-5', title: 'Certified Nutrition Specialist', date: '2012' },
             { id: 'ach-6', title: 'Marathon Coach Certification', date: '2015' },
           ],
+          certifications: [],
         },
         courses: [],
         clients: [],
@@ -93,6 +114,7 @@ class StorageService {
             { id: 'ach-7', title: 'CrossFit Level 2 Trainer', date: '2017' },
             { id: 'ach-8', title: 'Functional Movement Screen Certified', date: '2019' },
           ],
+          certifications: [],
         },
         courses: [],
         clients: [],
@@ -112,6 +134,7 @@ class StorageService {
             { id: 'ach-9', title: 'USA Boxing Certified Coach', date: '2009' },
             { id: 'ach-10', title: 'Black Belt in Brazilian Jiu-Jitsu', date: '2015' },
           ],
+          certifications: [],
         },
         courses: [],
         clients: [],
@@ -131,6 +154,7 @@ class StorageService {
             { id: 'ach-11', title: 'Certified Pilates Instructor', date: '2015' },
             { id: 'ach-12', title: 'Physical Therapy Assistant License', date: '2017' },
           ],
+          certifications: [],
         },
         courses: [],
         clients: [],
@@ -150,6 +174,7 @@ class StorageService {
             { id: 'ach-13', title: 'USA Swimming Certified Coach', date: '2013' },
             { id: 'ach-14', title: 'Ironman Certified Coach', date: '2018' },
           ],
+          certifications: [],
         },
         courses: [],
         clients: [],
@@ -169,6 +194,7 @@ class StorageService {
             { id: 'ach-15', title: 'Zumba Instructor License', date: '2018' },
             { id: 'ach-16', title: 'Dance Fitness Certification', date: '2020' },
           ],
+          certifications: [],
         },
         courses: [],
         clients: [],
@@ -188,6 +214,7 @@ class StorageService {
             { id: 'ach-17', title: 'USAPL Certified Coach', date: '2011' },
             { id: 'ach-18', title: 'Powerlifting Competition Judge', date: '2016' },
           ],
+          certifications: [],
         },
         courses: [],
         clients: [],
@@ -207,6 +234,7 @@ class StorageService {
             { id: 'ach-19', title: 'Senior Fitness Specialist Certification', date: '2010' },
             { id: 'ach-20', title: 'Fall Prevention Specialist', date: '2018' },
           ],
+          certifications: [],
         },
         courses: [],
         clients: [],
@@ -223,7 +251,15 @@ class StorageService {
         profile: {
           fullName: 'Alice Brown',
           age: 28,
+          phoneNumber: '+1-555-0201',
           fitnessLevel: FitnessLevel.BEGINNER,
+          physicalDetails: {
+            height: 165,
+            weight: 70,
+            bmi: 25.7,
+          },
+          medicalConditions: 'None',
+          preferredTrainingType: ['ONE_ON_ONE', 'ONLINE'] as any,
         },
         trainers: [],
         goals: ['Lose weight', 'Build strength'],
@@ -526,6 +562,8 @@ class StorageService {
     localStorage.setItem(this.storageKeys.users, JSON.stringify(finalUsers));
     localStorage.setItem(this.storageKeys.courses, JSON.stringify(mockCourses));
     localStorage.setItem(this.storageKeys.connections, JSON.stringify(connections));
+    localStorage.setItem(this.storageKeys.availability, JSON.stringify([]));
+    localStorage.setItem(this.storageKeys.bookings, JSON.stringify([]));
   }
 
   // User operations
@@ -658,6 +696,87 @@ class StorageService {
   getConnection(trainerId: string, clientId: string): Connection | undefined {
     return this.getConnections().find(
       (c) => c.trainerId === trainerId && c.clientId === clientId
+    );
+  }
+
+  // Availability operations
+  getAvailability(): Availability[] {
+    const data = localStorage.getItem(this.storageKeys.availability);
+    return data ? JSON.parse(data) : [];
+  }
+
+  getAvailabilityByTrainerId(trainerId: string): Availability[] {
+    return this.getAvailability().filter((a) => a.trainerId === trainerId);
+  }
+
+  createAvailability(availability: Availability): void {
+    const availabilities = this.getAvailability();
+    availabilities.push(availability);
+    localStorage.setItem(this.storageKeys.availability, JSON.stringify(availabilities));
+  }
+
+  updateAvailability(availability: Availability): void {
+    const availabilities = this.getAvailability();
+    const index = availabilities.findIndex((a) => a.id === availability.id);
+    if (index !== -1) {
+      availabilities[index] = availability;
+      localStorage.setItem(this.storageKeys.availability, JSON.stringify(availabilities));
+    }
+  }
+
+  deleteAvailability(id: string): void {
+    const availabilities = this.getAvailability().filter((a) => a.id !== id);
+    localStorage.setItem(this.storageKeys.availability, JSON.stringify(availabilities));
+  }
+
+  // Booking operations
+  getBookings(): Booking[] {
+    const data = localStorage.getItem(this.storageKeys.bookings);
+    return data ? JSON.parse(data) : [];
+  }
+
+  getBookingsByTrainerId(trainerId: string): Booking[] {
+    return this.getBookings().filter((b) => b.trainerId === trainerId);
+  }
+
+  getBookingsByClientId(clientId: string): Booking[] {
+    return this.getBookings().filter((b) => b.clientId === clientId);
+  }
+
+  createBooking(booking: Booking): void {
+    const bookings = this.getBookings();
+    bookings.push(booking);
+    localStorage.setItem(this.storageKeys.bookings, JSON.stringify(bookings));
+  }
+
+  updateBooking(booking: Booking): void {
+    const bookings = this.getBookings();
+    const index = bookings.findIndex((b) => b.id === booking.id);
+    if (index !== -1) {
+      bookings[index] = booking;
+      localStorage.setItem(this.storageKeys.bookings, JSON.stringify(bookings));
+    }
+  }
+
+  cancelBooking(bookingId: string): void {
+    const bookings = this.getBookings();
+    const booking = bookings.find((b) => b.id === bookingId);
+    if (booking) {
+      booking.status = BookingStatus.CANCELLED;
+      booking.updatedAt = new Date().toISOString();
+      this.updateBooking(booking);
+    }
+  }
+
+  // Check if a time slot is already booked
+  isSlotBooked(trainerId: string, date: string, timeSlot: { startTime: string; endTime: string }): boolean {
+    const bookings = this.getBookingsByTrainerId(trainerId);
+    return bookings.some(
+      (b) =>
+        b.date === date &&
+        b.status === BookingStatus.CONFIRMED &&
+        b.timeSlot.startTime === timeSlot.startTime &&
+        b.timeSlot.endTime === timeSlot.endTime
     );
   }
 }

@@ -45,6 +45,7 @@ class AuthService {
           areasOfExpertise: profileData?.areasOfExpertise || [],
           yearsOfExperience: profileData?.yearsOfExperience || 0,
           achievements: [],
+          certifications: [],
         },
         courses: [],
         clients: [],
