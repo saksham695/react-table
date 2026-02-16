@@ -23,6 +23,15 @@
   text-align: center;
 }
 
+.stat-card.highlight {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.stat-card.highlight .stat-value,
+.stat-card.highlight .stat-label {
+  color: white;
+}
+
 .stat-value {
   font-size: 2.5rem;
   font-weight: bold;
@@ -130,6 +139,16 @@
   color: #991b1b;
 }
 
+.status-badge.pending {
+  background: #fed7aa;
+  color: #92400e;
+}
+
+.status-badge.rejected {
+  background: #fecaca;
+  color: #7f1d1d;
+}
+
 .booking-details {
   display: flex;
   flex-direction: column;
@@ -220,6 +239,42 @@
 
 .empty-state p {
   color: #6b7280;
+  font-size: 1rem;
+}
+
+.confirm-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  background: #10b981;
+  color: white;
+}
+
+.confirm-button:hover {
+  background: #059669;
+}
+
+.reject-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  background: #ef4444;
+  color: white;
+}
+
+.reject-button:hover {
+  background: #dc2626;
+}
+
+.fee-amount {
+  color: #10b981;
+  font-weight: 600;
   font-size: 1rem;
 }
 

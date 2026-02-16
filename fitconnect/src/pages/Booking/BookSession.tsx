@@ -77,7 +77,8 @@ const BookSession: React.FC = () => {
       clientId: client.id,
       date: selectedDate,
       timeSlot: selectedSlot,
-      status: BookingStatus.CONFIRMED,
+      status: BookingStatus.PENDING,
+      fee: trainer.profile.pricing?.perSession,
       notes: notes || undefined,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -110,8 +111,9 @@ const BookSession: React.FC = () => {
         {success ? (
           <div className="success-card">
             <div className="success-icon">✓</div>
-            <h2>Booking Confirmed!</h2>
-            <p>Your session has been booked successfully.</p>
+            <h2>Booking Request Sent!</h2>
+            <p>Your booking request has been sent to the trainer.</p>
+            <p>Status: <strong>Pending Approval</strong></p>
             <p className="redirect-text">Redirecting to your bookings...</p>
           </div>
         ) : (

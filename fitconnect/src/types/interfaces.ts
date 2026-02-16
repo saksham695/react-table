@@ -117,6 +117,7 @@ export interface Booking {
   date: string; // ISO date string
   timeSlot: TimeSlot;
   status: BookingStatus;
+  fee?: number; // Session fee (from trainer pricing)
   notes?: string;
   createdAt: string;
   updatedAt: string;

@@ -9,7 +9,7 @@ import './TrainerBookings.css';
 const TrainerBookings: React.FC = () => {
   const { trainer } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [filter, setFilter] = useState<'all' | 'upcoming' | 'past' | 'cancelled'>('upcoming');
+  const [filter, setFilter] = useState<'all' | 'pending' | 'confirmed' | 'past' | 'cancelled' | 'rejected'>('pending');
 
   useEffect(() => {
     if (trainer) {
@@ -53,18 +53,34 @@ const TrainerBookings: React.FC = () => {
     }
   };
 
+  const handleConfirmBooking = (bookingId: string) => {
+    storageService.confirmBooking(bookingId);
+    loadBookings();
+  };
+
+  const handleRejectBooking = (bookingId: string) => {
+    if (window.confirm('Are you sure you want to reject this booking?')) {
+      storageService.rejectBooking(bookingId);
+      loadBookings();
+    }
+  };
+
   const filteredBookings = bookings.filter((booking) => {
     const bookingDate = new Date(booking.date);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     switch (filter) {
-      case 'upcoming':
+      case 'pending':
+        return booking.status === BookingStatus.PENDING;
+      case 'confirmed':
         return bookingDate >= today && booking.status === BookingStatus.CONFIRMED;
       case 'past':
         return bookingDate < today || booking.status === BookingStatus.COMPLETED;
       case 'cancelled':
         return booking.status === BookingStatus.CANCELLED;
+      case 'rejected':
+        return booking.status === BookingStatus.REJECTED;
       default:
         return true;
     }
@@ -78,11 +94,13 @@ const TrainerBookings: React.FC = () => {
 
   const stats = {
     total: bookings.length,
-    upcoming: bookings.filter(
+    pending: bookings.filter((b) => b.status === BookingStatus.PENDING).length,
+    confirmed: bookings.filter(
       (b) => new Date(b.date) >= new Date() && b.status === BookingStatus.CONFIRMED
     ).length,
     completed: bookings.filter((b) => b.status === BookingStatus.COMPLETED).length,
     cancelled: bookings.filter((b) => b.status === BookingStatus.CANCELLED).length,
+    rejected: bookings.filter((b) => b.status === BookingStatus.REJECTED).length,
   };
 
   return (
@@ -96,17 +114,17 @@ const TrainerBookings: React.FC = () => {
             <div className="stat-value">{stats.total}</div>
             <div className="stat-label">Total Bookings</div>
           </div>
+          <div className="stat-card highlight">
+            <div className="stat-value">{stats.pending}</div>
+            <div className="stat-label">Pending Approval</div>
+          </div>
           <div className="stat-card">
-            <div className="stat-value">{stats.upcoming}</div>
-            <div className="stat-label">Upcoming</div>
+            <div className="stat-value">{stats.confirmed}</div>
+            <div className="stat-label">Confirmed</div>
           </div>
           <div className="stat-card">
             <div className="stat-value">{stats.completed}</div>
             <div className="stat-label">Completed</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-value">{stats.cancelled}</div>
-            <div className="stat-label">Cancelled</div>
           </div>
         </div>
 
@@ -119,16 +137,28 @@ const TrainerBookings: React.FC = () => {
             All
           </button>
           <button
-            className={filter === 'upcoming' ? 'active' : ''}
-            onClick={() => setFilter('upcoming')}
+            className={filter === 'pending' ? 'active' : ''}
+            onClick={() => setFilter('pending')}
           >
-            Upcoming
+            Pending ({stats.pending})
+          </button>
+          <button
+            className={filter === 'confirmed' ? 'active' : ''}
+            onClick={() => setFilter('confirmed')}
+          >
+            Confirmed
           </button>
           <button
             className={filter === 'past' ? 'active' : ''}
             onClick={() => setFilter('past')}
           >
             Past
+          </button>
+          <button
+            className={filter === 'rejected' ? 'active' : ''}
+            onClick={() => setFilter('rejected')}
+          >
+            Rejected
           </button>
           <button
             className={filter === 'cancelled' ? 'active' : ''}
@@ -164,6 +194,14 @@ const TrainerBookings: React.FC = () => {
                       {booking.timeSlot.startTime} - {booking.timeSlot.endTime}
                     </span>
                   </div>
+                  {booking.fee && (
+                    <div className="detail-item">
+                      <strong>Fee:</strong>
+                      <span className="fee-amount">
+                        ${booking.fee}
+                      </span>
+                    </div>
+                  )}
                   {booking.notes && (
                     <div className="notes-section">
                       <strong>Notes:</strong>
@@ -171,6 +209,23 @@ const TrainerBookings: React.FC = () => {
                     </div>
                   )}
                 </div>
+
+                {booking.status === BookingStatus.PENDING && (
+                  <div className="booking-actions">
+                    <button
+                      onClick={() => handleConfirmBooking(booking.id)}
+                      className="confirm-button"
+                    >
+                      Confirm Booking
+                    </button>
+                    <button
+                      onClick={() => handleRejectBooking(booking.id)}
+                      className="reject-button"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                )}
 
                 {booking.status === BookingStatus.CONFIRMED && (
                   <div className="booking-actions">

@@ -768,13 +768,33 @@ class StorageService {
     }
   }
 
-  // Check if a time slot is already booked
+  confirmBooking(bookingId: string): void {
+    const bookings = this.getBookings();
+    const booking = bookings.find((b) => b.id === bookingId);
+    if (booking) {
+      booking.status = BookingStatus.CONFIRMED;
+      booking.updatedAt = new Date().toISOString();
+      this.updateBooking(booking);
+    }
+  }
+
+  rejectBooking(bookingId: string): void {
+    const bookings = this.getBookings();
+    const booking = bookings.find((b) => b.id === bookingId);
+    if (booking) {
+      booking.status = BookingStatus.REJECTED;
+      booking.updatedAt = new Date().toISOString();
+      this.updateBooking(booking);
+    }
+  }
+
+  // Check if a time slot is already booked (including pending bookings)
   isSlotBooked(trainerId: string, date: string, timeSlot: { startTime: string; endTime: string }): boolean {
     const bookings = this.getBookingsByTrainerId(trainerId);
     return bookings.some(
       (b) =>
         b.date === date &&
-        b.status === BookingStatus.CONFIRMED &&
+        (b.status === BookingStatus.CONFIRMED || b.status === BookingStatus.PENDING) &&
         b.timeSlot.startTime === timeSlot.startTime &&
         b.timeSlot.endTime === timeSlot.endTime
     );

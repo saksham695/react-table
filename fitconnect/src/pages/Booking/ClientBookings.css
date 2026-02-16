@@ -44,6 +44,15 @@
   text-align: center;
 }
 
+.stat-card.highlight {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.stat-card.highlight .stat-value,
+.stat-card.highlight .stat-label {
+  color: white;
+}
+
 .stat-value {
   font-size: 2.5rem;
   font-weight: bold;
@@ -149,6 +158,16 @@
 .status-badge.cancelled {
   background: #fee2e2;
   color: #991b1b;
+}
+
+.status-badge.pending {
+  background: #fed7aa;
+  color: #92400e;
+}
+
+.status-badge.rejected {
+  background: #fecaca;
+  color: #7f1d1d;
 }
 
 .booking-details {
@@ -258,6 +277,33 @@
 
 .cta-button:hover {
   background: #1d4ed8;
+}
+
+.pending-message,
+.rejected-message {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+.pending-message {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fbbf24;
+}
+
+.rejected-message {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #f87171;
+}
+
+.fee-amount {
+  color: #10b981;
+  font-weight: 600;
+  font-size: 1rem;
 }
 
 @media (max-width: 768px) {
